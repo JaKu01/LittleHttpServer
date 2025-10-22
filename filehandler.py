@@ -1,12 +1,5 @@
 from handler import Handler
-from handler_utils import build_response_as_bytes
-
-
-def read_html_file(file_path):
-    if file_path == '/':
-        file_path = 'index.html'
-    with open(f'.{file_path}') as f:
-        return f.read()
+from utils import build_response_as_bytes, read_html_file, build_not_found_response
 
 
 class FileHandler(Handler):
@@ -14,10 +7,9 @@ class FileHandler(Handler):
         status = '200 OK'
 
         try:
-            body = read_html_file(path)
-        except FileNotFoundError:
-            status = '404 Not Found'
-            body = ''
+            body = read_html_file(f'./{path}')
+        except (FileNotFoundError, IsADirectoryError):
+            return build_not_found_response()
         except Exception as e:
             status = '500 Internal Server Error'
             body = ''

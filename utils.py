@@ -13,5 +13,18 @@ def build_response_as_bytes(status, content_type='text/html', body_str=''):
     return response.encode(encoding='utf-8')
 
 
+def build_not_found_response() -> (bytes, str):
+    not_found_body = read_html_file("./assets/404.html")
+    not_found_status = '404 Not found'
+    return build_response_as_bytes(status=not_found_status, body_str=not_found_body), not_found_status
+
+
 def not_found_handler(verb, path, header_dict, body) -> (bytes, str):
-    return build_response_as_bytes(status='404 Not found', body_str='<h1>404 Not found</h1>'), '404 Not found'
+    return build_not_found_response()
+
+
+def read_html_file(file_path):
+    if file_path == './':
+        file_path += '/index.html'
+    with open(f'{file_path}') as f:
+        return f.read()

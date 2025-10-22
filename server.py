@@ -6,7 +6,7 @@ from typing import Callable, Tuple
 from colorama import Fore, init
 
 from handler import Handler
-from handler_utils import not_found_handler
+from utils import not_found_handler
 
 init(autoreset=True)
 
