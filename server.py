@@ -6,10 +6,9 @@ from typing import Callable, Tuple
 from colorama import Fore, init
 
 from handler import Handler
-from handler_utils import build_response_as_bytes
+from handler_utils import not_found_handler
 
 init(autoreset=True)
-
 
 CONST_DELIMITER = b'\r\n\r\n'
 
@@ -50,7 +49,20 @@ def pretty_print_log(verb, path, status, duration_ms):
     if not status.startswith('2'):
         status_color = Fore.RED
 
-    print(f"{Fore.CYAN}{verb} {path}{Fore.RESET} finished with status {status_color}{status}{Fore.RESET} after {Fore.CYAN}{duration_ms:.2f}{Fore.RESET} ms")
+    print(
+        f'{Fore.CYAN}{verb} {path}{Fore.RESET} finished with status {status_color}{status}{Fore.RESET} after {Fore.CYAN}{duration_ms:.2f}{Fore.RESET} ms')
+
+
+def build_path(path_parts, length):
+    if length == 0:
+        return '/'
+
+    path = ''
+    for idx in range(length):
+        path += '/' + path_parts[idx]
+
+    print('full path is ', path)
+    return path
 
 
 class HttpServer:
@@ -60,16 +72,23 @@ class HttpServer:
         self.port = port
         self.ip = ip
 
+    def get_handler(self, verb, path):
+        path_parts = [part for part in path.split('/') if part]
+        num_of_parts = len(path_parts)
+
+        for i in range(num_of_parts, -1, -1):
+            full_path = build_path(path_parts, i)
+            if (verb, full_path) in self.handlers:
+                return self.handlers[(verb, full_path)]
+        return not_found_handler
+
     def handle_request(self, connection):
         start = time.perf_counter()
         headers, body = read_request(connection)
         verb, path, version, header_dict = parse_headers(headers)
 
-        handler_key = f'{verb} {path}'
-        if handler_key in self.handlers:
-            response = self.handlers[handler_key](verb, path, header_dict, body)
-        else:
-            response = build_response_as_bytes(404), '404 Not found'
+        request_handler = self.get_handler(verb, path)
+        response = request_handler(verb, path, header_dict, body)
 
         connection.sendall(response[0])
         end = time.perf_counter()
@@ -77,10 +96,12 @@ class HttpServer:
         pretty_print_log(verb, path, response[1], duration_ms)
 
     def add_handler(self, verb: str, path: str, handler: Handler):
-        self.handlers[f'{verb} {path}'] = handler.handle_connection
+        handler_key = (verb, path)
+        self.handlers[handler_key] = handler.handle_connection
 
     def add_handle_func(self, verb, path, handle_func: Callable[[str, str, str, str], Tuple[bytes, str]]):
-        self.handlers[f'{verb} {path}'] = handle_func
+        handler_key = (verb, path)
+        self.handlers[handler_key] = handle_func
 
     def run(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -5,7 +5,7 @@ from handler_utils import build_response_as_bytes
 def read_html_file(file_path):
     if file_path == '/':
         file_path = 'index.html'
-    with open(f'./{file_path}') as f:
+    with open(f'.{file_path}') as f:
         return f.read()
 
 
@@ -21,7 +21,7 @@ class FileHandler(Handler):
         except Exception as e:
             status = '500 Internal Server Error'
             body = ''
-            print('Unhandled exception occured: ', e)
+            print('Unhandled exception occurred: ', e)
 
         return build_response_as_bytes(status=status, content_type='text/html', body_str=body), status
 

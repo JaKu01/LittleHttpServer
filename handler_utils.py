@@ -11,3 +11,7 @@ def build_response_as_bytes(status, content_type='text/html', body_str=''):
         f'{body_str}'
     )
     return response.encode(encoding='utf-8')
+
+
+def not_found_handler(verb, path, header_dict, body) -> (bytes, str):
+    return build_response_as_bytes(status='404 Not found', body_str='<h1>404 Not found</h1>'), '404 Not found'
