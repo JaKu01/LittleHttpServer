@@ -1,3 +1,5 @@
+from string import Template
+
 CONST_DELIMITER = b'\r\n\r\n'
 
 
@@ -14,8 +16,26 @@ def build_response_as_bytes(status, content_type='text/html', body_str=''):
 
 
 def build_not_found_response() -> (bytes, str):
-    not_found_body = read_html_file("./assets/404.html")
+    tmpl = Template(read_html_file("assets/error.html"))
+
     not_found_status = '404 Not found'
+    not_found_body = tmpl.substitute(
+        title=not_found_status,
+        code='404',
+        message='Oops! The page you are looking for cannot be found.'
+    )
+    return build_response_as_bytes(status=not_found_status, body_str=not_found_body), not_found_status
+
+
+def build_internal_server_error_response() -> (bytes, str):
+    tmpl = Template(read_html_file("assets/error.html"))
+
+    not_found_status = '500 Internal server error'
+    not_found_body = tmpl.substitute(
+        title=not_found_status,
+        code='500',
+        message='Oops! Something went wrong on our end.'
+    )
     return build_response_as_bytes(status=not_found_status, body_str=not_found_body), not_found_status
 
 

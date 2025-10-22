@@ -1,5 +1,5 @@
 from handler import Handler
-from utils import build_response_as_bytes, read_html_file, build_not_found_response
+from utils import build_response_as_bytes, read_html_file, build_not_found_response, build_internal_server_error_response
 
 
 class FileHandler(Handler):
@@ -11,9 +11,8 @@ class FileHandler(Handler):
         except (FileNotFoundError, IsADirectoryError):
             return build_not_found_response()
         except Exception as e:
-            status = '500 Internal Server Error'
-            body = ''
             print('Unhandled exception occurred: ', e)
+            return build_internal_server_error_response()
 
         return build_response_as_bytes(status=status, content_type='text/html', body_str=body), status
 
