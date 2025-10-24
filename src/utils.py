@@ -1,6 +1,10 @@
+import os
 from string import Template
 
 CONST_DELIMITER = b'\r\n\r\n'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ASSETS_DIR = os.path.join(BASE_DIR, '../assets')
 
 
 def build_response_as_bytes(status, content_type='text/html', body_str=''):
@@ -16,7 +20,7 @@ def build_response_as_bytes(status, content_type='text/html', body_str=''):
 
 
 def build_not_found_response() -> (bytes, str):
-    tmpl = Template(read_html_file("assets/error.html"))
+    tmpl = Template(read_html_file(os.path.join(ASSETS_DIR, 'error.html')))
 
     not_found_status = '404 Not found'
     not_found_body = tmpl.substitute(
@@ -28,7 +32,7 @@ def build_not_found_response() -> (bytes, str):
 
 
 def build_internal_server_error_response() -> (bytes, str):
-    tmpl = Template(read_html_file("assets/error.html"))
+    tmpl = Template(read_html_file(os.path.join(ASSETS_DIR, 'error.html')))
 
     not_found_status = '500 Internal server error'
     not_found_body = tmpl.substitute(

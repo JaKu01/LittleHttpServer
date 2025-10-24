@@ -42,7 +42,7 @@ To add a custom handler:
 
    Example:
    ```python
-   from handler import Handler
+   from src.handler import Handler
 
    class CustomHandler(Handler):
        def handle_connection(self, verb, path, header_dict, body):
