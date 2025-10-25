@@ -17,7 +17,7 @@ This project is a **personal learning project** aimed at understanding the basic
    Clone this repository to your local machine.
 
 2. **Install Dependencies**  
-   Ensure you have Python installed. Install any required dependencies using `pip`:
+   Ensure you have [uv](https://docs.astral.sh/uv/getting-started/) with [Python](https://docs.astral.sh/uv/guides/install-python/) installed. Install any required dependencies using:
    ```bash
    pip install -r requirements.txt
    ```
